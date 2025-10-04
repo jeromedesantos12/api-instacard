@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "../connections/prisma";
 import { redis } from "../connections/redis";
 
-export async function getLinks(
+export async function getSocials(
   req: Request,
   res: Response,
   next: NextFunction
@@ -15,7 +15,7 @@ export async function getLinks(
     const order =
       (req.query.order as string)?.toLowerCase() === "desc" ? "desc" : "asc";
     const userId = (req as any).user.id;
-    const links = await prisma.link.findMany({
+    const socials = await prisma.socialLink.findMany({
       where: {
         user_id: userId,
         is_active: true,
@@ -26,7 +26,7 @@ export async function getLinks(
         [sortField]: order,
       },
     });
-    const total = await prisma.link.count({
+    const total = await prisma.socialLink.count({
       where: {
         user_id: userId,
         is_active: true,
@@ -38,14 +38,14 @@ export async function getLinks(
     if (value) {
       results = JSON.parse(value);
     } else {
-      results = links;
+      results = socials;
       await redis.set(key, JSON.stringify(results), {
         EX: 300,
       });
     }
     res.status(200).json({
       status: "success",
-      message: "Fetch links success!",
+      message: "Fetch socials success!",
       data: results,
       meta: {
         total,
@@ -58,7 +58,7 @@ export async function getLinks(
   }
 }
 
-export async function getLinkById(
+export async function getSocialById(
   req: Request,
   res: Response,
   next: NextFunction
@@ -66,7 +66,7 @@ export async function getLinkById(
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
-    const link = await prisma.link.findUnique({
+    const social = await prisma.socialLink.findUnique({
       where: {
         id,
         user_id: userId,
@@ -75,23 +75,23 @@ export async function getLinkById(
     });
     res.status(200).json({
       status: "success",
-      message: "Fetch link success!",
-      data: link,
+      message: "Fetch social success!",
+      data: social,
     });
   } catch (err) {
     next(err);
   }
 }
 
-export async function postLink(
+export async function postSocial(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { title, url } = req.body;
+    const { platform, handle, url } = req.body;
     const userId = (req as any).user.id;
-    const maxOrder = await prisma.link.aggregate({
+    const maxOrder = await prisma.socialLink.aggregate({
       _max: {
         order_index: true,
       },
@@ -100,9 +100,10 @@ export async function postLink(
       },
     });
     const newOrderIndex = (maxOrder._max.order_index ?? -1) + 1;
-    const link = await prisma.link.create({
+    const social = await prisma.socialLink.create({
       data: {
-        title,
+        platform,
+        handle,
         url,
         order_index: newOrderIndex,
         is_active: true,
@@ -111,45 +112,46 @@ export async function postLink(
     });
     res.status(201).json({
       status: "success",
-      message: "Create link success",
-      data: link,
+      message: "Create social success",
+      data: social,
     });
   } catch (err) {
     next(err);
   }
 }
 
-export async function updateLink(
+export async function updateSocial(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
     const { id } = req.params;
-    const { title, url } = req.body;
+    const { platform, handle, url } = req.body;
     const userId = (req as any).user.id;
-    const link = await prisma.link.update({
+    const social = await prisma.socialLink.update({
       where: {
         id,
         user_id: userId,
         is_active: true,
       },
       data: {
-        title,
+        platform,
+        handle,
         url,
       },
     });
     res.status(200).json({
       status: "success",
       message: "Update link success",
-      data: link,
+      data: social,
     });
   } catch (err) {
     next(err);
   }
 }
 
-export async function updateLinkOrder(
+export async function updateSocialOrder(
   req: Request,
   res: Response,
   next: NextFunction
@@ -158,7 +160,7 @@ export async function updateLinkOrder(
     const { id } = req.params;
     const { order_index } = req.body;
     const userId = (req as any).user.id;
-    const link = await prisma.link.update({
+    const social = await prisma.socialLink.update({
       where: {
         id,
         user_id: userId,
@@ -170,15 +172,15 @@ export async function updateLinkOrder(
     });
     res.status(200).json({
       status: "success",
-      message: "Update index link success",
-      data: link,
+      message: "Update index social success",
+      data: social,
     });
   } catch (err) {
     next(err);
   }
 }
 
-export async function deleteLink(
+export async function deleteSocial(
   req: Request,
   res: Response,
   next: NextFunction
@@ -186,7 +188,7 @@ export async function deleteLink(
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
-    const link = await prisma.link.update({
+    const social = await prisma.socialLink.update({
       where: {
         id,
         user_id: userId,
@@ -198,8 +200,8 @@ export async function deleteLink(
     });
     res.status(200).json({
       status: "success",
-      message: "Delete link success",
-      data: link,
+      message: "Delete social success",
+      data: social,
     });
   } catch (err) {
     next(err);

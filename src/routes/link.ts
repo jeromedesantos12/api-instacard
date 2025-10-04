@@ -9,7 +9,7 @@ import {
 } from "../controllers/link";
 import { config } from "dotenv";
 import { validate } from "../middlewares/validate";
-import { linkOrderSchema, linkSchema } from "../utils/joi";
+import { orderSchema, linkSchema } from "../utils/joi";
 
 config();
 
@@ -22,7 +22,7 @@ router.patch(
   "/:id/reorder",
   auth,
   isSame,
-  validate(linkOrderSchema),
+  validate(orderSchema),
   updateLinkOrder
 );
 router.delete("/:id", auth, isSame, deleteLink);

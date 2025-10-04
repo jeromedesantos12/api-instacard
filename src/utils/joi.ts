@@ -86,7 +86,24 @@ export const linkSchema = Joi.object({
   }),
 });
 
-export const linkOrderSchema = Joi.object({
+export const socialSchema = Joi.object({
+  platform: Joi.string().trim().min(1).required().messages({
+    "string.empty": "Platform is required.",
+    "string.min": "Platform must not be empty.",
+    "any.required": "Platform is required.",
+  }),
+  handle: Joi.string().trim().min(1).required().messages({
+    "string.empty": "Handle is required.",
+    "string.min": "Handle must not be empty.",
+    "any.required": "Handle is required.",
+  }),
+  url: Joi.string().uri().required().messages({
+    "string.uri": "Invalid URL.",
+    "any.required": "URL is required.",
+  }),
+});
+
+export const orderSchema = Joi.object({
   order_index: Joi.number().integer().min(1).required().messages({
     "number.base": "Order index must be a number.",
     "number.integer": "Order index must be an integer.",

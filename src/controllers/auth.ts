@@ -38,7 +38,7 @@ export async function loginAuth(
       .status(200)
       .json({
         status: "Success",
-        message: `Login success!`,
+        message: "Login success!",
       });
   } catch (err) {
     next(err);

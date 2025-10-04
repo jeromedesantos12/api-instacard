@@ -214,7 +214,7 @@ export async function updateUser(
     });
     res.status(200).json({
       status: "Success",
-      message: `Update user success!`,
+      message: "Update user success!",
       data: user,
     });
   } catch (err) {
