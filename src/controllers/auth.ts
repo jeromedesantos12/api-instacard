@@ -38,20 +38,7 @@ export async function loginAuth(
       .status(200)
       .json({
         status: "Success",
-        message: `Login User by: ${emailOrUsername} success!`,
-      });
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 24 * 60 * 60 * 1000,
-        sameSite: "strict",
-        path: "/",
-      })
-      .status(200)
-      .json({
-        status: "Success",
-        message: `Login User by: ${emailOrUsername} success!`,
+        message: `Login success!`,
       });
   } catch (err) {
     next(err);
@@ -70,7 +57,7 @@ export function logoutAuth(req: Request, res: Response, next: NextFunction) {
       .status(200)
       .json({
         status: "Success",
-        message: "Logout successful!",
+        message: "Logout success!",
       });
   } catch (err) {
     next(err);
@@ -97,7 +84,7 @@ export async function registerAuth(
         throw appError("Email already registered", 409);
       }
     }
-    await prisma.user.create({
+    const create = await prisma.user.create({
       data: {
         name,
         username,
@@ -105,9 +92,21 @@ export async function registerAuth(
         password: hashedPassword,
       },
     });
+    const register = await prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        created_at: true,
+        updated_at: true,
+      },
+      where: { id: create.id },
+    });
     res.status(201).json({
       status: "Success",
-      message: `Create user ${name} success!`,
+      message: "Register success!",
+      data: register,
     });
   } catch (err) {
     next(err);
@@ -119,9 +118,9 @@ export function verifyAuth(req: Request, res: Response, next: NextFunction) {
     const userId = (req as any).user.id;
     res.status(200).json({
       status: "Success",
-      message: "Fetch user success!",
+      message: "Verify success!",
       data: {
-        userId,
+        id: userId,
       },
     });
   } catch (err) {
@@ -154,7 +153,7 @@ export async function resetAuth(
     });
     res.status(200).json({
       status: "Success",
-      message: `Reset user by id: ${id} success!`,
+      message: `Reset password success!`,
     });
   } catch (err) {
     next(err);

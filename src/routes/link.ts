@@ -1,27 +1,30 @@
 import { Router } from "express";
-import { auth, isSame, isExist } from "../middlewares/auth";
-// import { upload } from "../utils/multer";
-// import { validate } from "../middlewares/validate";
-// import { saveFile } from "../middlewares/file";
-// import { linkSchema } from "../utils/joi";
-import { getLinks } from "../controllers/link";
+import { auth, isSame } from "../middlewares/auth";
+import {
+  deleteLink,
+  getLinkById,
+  getLinks,
+  updateLink,
+  updateLinkOrder,
+} from "../controllers/link";
 import { config } from "dotenv";
+import { validate } from "../middlewares/validate";
+import { linkOrderSchema, linkSchema } from "../utils/joi";
 
 config();
 
 const router = Router();
 
 router.get("/", auth, getLinks);
-// router.get("/:id", auth, getLinkById);
-// router.put(
-//   "/:id",
-//   auth,
-//   isSame,
-//   isExist("user"),
-//   upload.single("photo_profile"),
-//   validate(linkSchema),
-//   saveFile,
-//   updateLink
-// );
+router.get("/:id", auth, getLinkById);
+router.patch("/:id", auth, isSame, validate(linkSchema), updateLink);
+router.patch(
+  "/:id/reorder",
+  auth,
+  isSame,
+  validate(linkOrderSchema),
+  updateLinkOrder
+);
+router.delete("/:id", auth, isSame, deleteLink);
 
 export default router;

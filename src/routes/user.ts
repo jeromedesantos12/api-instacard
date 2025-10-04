@@ -13,7 +13,7 @@ const router = Router();
 
 router.get("/", auth, getUsers);
 router.get("/:id", auth, getUserById);
-router.put(
+router.patch(
   "/:id",
   auth,
   isSame,

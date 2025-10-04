@@ -46,7 +46,7 @@ export async function getLinks(
     }
     res.status(200).json({
       status: "success",
-      message: "Links fetched",
+      message: "Fetch links success!",
       data: results,
       meta: {
         total,
@@ -77,28 +77,135 @@ export async function getLinkById(
     if (!link) {
       throw appError("Link not found", 404);
     }
-    let results = null;
-    const key = "getLinks";
-    const value = await redis.get(key);
-    if (value) {
-      results = JSON.parse(value);
-    } else {
-      results = link;
-      await redis.set(key, JSON.stringify(results), {
-        EX: 300,
-      });
-    }
     res.status(200).json({
       status: "success",
-      message: "Link fetched",
-      data: results,
+      message: "Fetch link success!",
+      data: link,
     });
   } catch (err) {
     next(err);
   }
 }
 
-export function postLink(req: Request, res: Response, next: NextFunction) {}
+export async function postLink(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { title, url } = req.body;
+    const userId = (req as any).user.id;
+    const maxOrder = await prisma.link.aggregate({
+      _max: {
+        order_index: true,
+      },
+      where: {
+        user_id: userId,
+      },
+    });
+    const newOrderIndex = (maxOrder._max.order_index ?? -1) + 1;
+    const link = await prisma.link.create({
+      data: {
+        title,
+        url,
+        order_index: newOrderIndex,
+        is_active: true,
+        user_id: userId,
+      },
+    });
+    res.status(201).json({
+      status: "success",
+      message: "Create link success",
+      data: link,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
 
-export function updateLink(req: Request, res: Response, next: NextFunction) {}
-export function deleteLink(req: Request, res: Response, next: NextFunction) {}
+export async function updateLink(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const { title, url } = req.body;
+    const userId = (req as any).user.id;
+    const link = await prisma.link.update({
+      where: {
+        id,
+        user_id: userId,
+        is_active: true,
+      },
+      data: {
+        title,
+        url,
+      },
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Update link success",
+      data: link,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateLinkOrder(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const { order_index } = req.body;
+    const userId = (req as any).user.id;
+    const link = await prisma.link.update({
+      where: {
+        id,
+        user_id: userId,
+        is_active: true,
+      },
+      data: {
+        order_index,
+      },
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Update link success",
+      data: link,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteLink(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+    const link = await prisma.link.update({
+      where: {
+        id,
+        user_id: userId,
+        is_active: true,
+      },
+      data: {
+        is_active: false,
+      },
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Delete link success",
+      data: link,
+    });
+  } catch (err) {
+    next(err);
+  }
+}

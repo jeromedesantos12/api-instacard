@@ -73,3 +73,24 @@ export const resetSchema = Joi.object({
     "any.required": "New Password is a required field",
   }),
 });
+
+export const linkSchema = Joi.object({
+  title: Joi.string().trim().min(1).required().messages({
+    "string.empty": "Title is required.",
+    "string.min": "Title must not be empty.",
+    "any.required": "Title is required.",
+  }),
+  url: Joi.string().uri().required().messages({
+    "string.uri": "Invalid URL.",
+    "any.required": "URL is required.",
+  }),
+});
+
+export const linkOrderSchema = Joi.object({
+  order_index: Joi.number().integer().min(1).required().messages({
+    "number.base": "Order index must be a number.",
+    "number.integer": "Order index must be an integer.",
+    "number.min": "Order index must be greater than or equal to 1.",
+    "any.required": "Order index is required.",
+  }),
+});

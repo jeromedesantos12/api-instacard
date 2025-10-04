@@ -110,21 +110,10 @@ export async function getUserById(
       },
       where: { id },
     });
-    let results = null;
-    const key = "getUserById:" + id;
-    const value = await redis.get(key);
-    if (value) {
-      results = JSON.parse(value);
-    } else {
-      results = user;
-      await redis.set(key, JSON.stringify(results), {
-        EX: 300,
-      });
-    }
     res.status(200).json({
       status: "Success",
       message: "Fetch user success!",
-      data: results,
+      data: user,
     });
   } catch (err) {
     next(err);
@@ -178,7 +167,7 @@ export async function updateUser(
     } else if (newBgImage) {
       dataToUpdate.bg_image_url = `user/image/${newBgImage.fileName}`;
     }
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       data: dataToUpdate,
       where: { id },
     });
@@ -206,9 +195,27 @@ export async function updateUser(
       const newPath = resolve(uploadsDir, "user", "image", newBgImage.fileName);
       writeFileSync(newPath, newBgImage.fileBuffer);
     }
+    const user = await prisma.user.findUnique({
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        email: true,
+        avatar_url: true,
+        bio: true,
+        headline: true,
+        theme_preset: true,
+        bg_color: true,
+        bg_image_url: true,
+        created_at: true,
+        updated_at: true,
+      },
+      where: { id: updatedUser.id },
+    });
     res.status(200).json({
       status: "Success",
-      message: `Update user ${name} success!`,
+      message: `Update user success!`,
+      data: user,
     });
   } catch (err) {
     next(err);
