@@ -4,7 +4,7 @@ import { appError } from "../utils/error";
 import { signToken } from "../utils/jwt";
 import { hashPassword, comparePassword } from "../utils/bcrypt";
 
-export async function loginUser(
+export async function loginAuth(
   req: Request,
   res: Response,
   next: NextFunction
@@ -58,7 +58,7 @@ export async function loginUser(
   }
 }
 
-export function logoutUser(req: Request, res: Response, next: NextFunction) {
+export function logoutAuth(req: Request, res: Response, next: NextFunction) {
   try {
     res
       .clearCookie("token", {
@@ -77,7 +77,7 @@ export function logoutUser(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export async function registerUser(
+export async function registerAuth(
   req: Request,
   res: Response,
   next: NextFunction
@@ -85,11 +85,17 @@ export async function registerUser(
   try {
     const { name, username, email, password } = req.body;
     const hashedPassword = await hashPassword(password);
-    const exitingEmail = await prisma.user.findUnique({
-      where: { email },
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ username: username }, { email: email }],
+      },
     });
-    if (exitingEmail) {
-      throw appError("Email already exists!", 409);
+    if (existingUser) {
+      if (existingUser.username === username) {
+        throw appError("Username already taken", 409);
+      } else if (existingUser.email === email) {
+        throw appError("Email already registered", 409);
+      }
     }
     await prisma.user.create({
       data: {
@@ -108,14 +114,14 @@ export async function registerUser(
   }
 }
 
-export function verifyUser(req: Request, res: Response, next: NextFunction) {
+export function verifyAuth(req: Request, res: Response, next: NextFunction) {
   try {
-    const { id } = (req as any).user;
+    const userId = (req as any).user.id;
     res.status(200).json({
       status: "Success",
       message: "Fetch user success!",
       data: {
-        id,
+        userId,
       },
     });
   } catch (err) {
@@ -123,7 +129,7 @@ export function verifyUser(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export async function resetUser(
+export async function resetAuth(
   req: Request,
   res: Response,
   next: NextFunction
@@ -149,29 +155,6 @@ export async function resetUser(
     res.status(200).json({
       status: "Success",
       message: `Reset user by id: ${id} success!`,
-    });
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function forgotUser(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { email } = req.body;
-    const user = await prisma.user.findUnique({
-      select: {
-        password: true,
-      },
-      where: { email },
-    });
-    res.status(200).json({
-      status: "Success",
-      message: `Fetch user success!`,
-      data: user,
     });
   } catch (err) {
     next(err);

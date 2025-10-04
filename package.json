@@ -1,5 +1,5 @@
 {
-  "name": "circle-api",
+  "name": "api-instacard",
   "description": "API for social media app",
   "version": "1.0.0",
   "main": "app.ts",

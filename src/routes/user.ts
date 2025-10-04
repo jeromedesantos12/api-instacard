@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { auth, isSame, isExist } from "../middlewares/auth";
-import { upload } from "../utils/multer";
 import { validate } from "../middlewares/validate";
-import { saveFile } from "../middlewares/file";
+import { saveFiles } from "../middlewares/file";
+import { upload } from "../utils/multer";
 import { userSchema } from "../utils/joi";
 import { getUsers, getUserById, updateUser } from "../controllers/user";
 import { config } from "dotenv";
@@ -18,9 +18,12 @@ router.put(
   auth,
   isSame,
   isExist("user"),
-  upload.single("photo_profile"),
+  upload.fields([
+    { name: "avatar_url", maxCount: 1 },
+    { name: "bg_image_url", maxCount: 1 },
+  ]),
   validate(userSchema),
-  saveFile,
+  saveFiles,
   updateUser
 );
 
