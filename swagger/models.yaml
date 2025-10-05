@@ -8,6 +8,17 @@ securitySchemes:
     name: token # Nama cookie untuk otentikasi
 
 parameters:
+  UsernamePath:
+    name: username
+    in: path
+    required: true
+    schema:
+      type: string
+      # Opsional: Tentukan format jika ada aturan ketat (misalnya, hanya huruf kecil, angka, dan underscore)
+      format: username
+      pattern: "^[a-zA-Z0-9_]{3,30}$"
+    description: Unique username (string) of the user resource.
+    example: john_doe
   IdPath:
     name: id
     in: path

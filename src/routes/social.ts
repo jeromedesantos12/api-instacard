@@ -4,6 +4,7 @@ import {
   deleteSocial,
   getSocialById,
   getSocials,
+  postSocial,
   updateSocial,
   updateSocialOrder,
 } from "../controllers/social";
@@ -17,6 +18,7 @@ const router = Router();
 
 router.get("/", auth, getSocials);
 router.get("/:id", auth, getSocialById);
+router.post("/", auth, validate(socialSchema), postSocial);
 router.patch("/:id", auth, isSame, validate(socialSchema), updateSocial);
 router.patch(
   "/:id/reorder",

@@ -4,14 +4,20 @@ import { validate } from "../middlewares/validate";
 import { saveFiles } from "../middlewares/file";
 import { upload } from "../utils/multer";
 import { userSchema } from "../utils/joi";
-import { getUsers, getUserById, updateUser } from "../controllers/user";
+import {
+  getUsers,
+  getUserById,
+  updateUser,
+  getUserByUsername,
+} from "../controllers/user";
 
 const router = Router();
 
 router.get("/", auth, getUsers);
-router.get("/:id", auth, getUserById);
+router.get("/u/:username", auth, getUserByUsername);
+router.get("/me/:id", getUserById);
 router.patch(
-  "/:id",
+  "/me/:id",
   auth,
   isSame,
   isExist("user"),

@@ -4,6 +4,7 @@ import {
   deleteLink,
   getLinkById,
   getLinks,
+  postLink,
   updateLink,
   updateLinkOrder,
 } from "../controllers/link";
@@ -14,6 +15,7 @@ const router = Router();
 
 router.get("/", auth, getLinks);
 router.get("/:id", auth, getLinkById);
+router.post("/", auth, validate(linkSchema), postLink);
 router.patch("/:id", auth, isSame, validate(linkSchema), updateLink);
 router.patch(
   "/:id/reorder",

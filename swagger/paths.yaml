@@ -82,7 +82,18 @@
     responses:
       "200": { description: Success }
 
-/user/{id}:
+/user/u/{username}:
+  get:
+    tags: [User]
+    summary: Get user by Username
+    operationId: getUserByUsername
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    responses:
+      "200": { description: Success }
+      "404": { $ref: "#/components/responses/NotFound" }
+
+/user/me/{id}:
   get:
     tags: [User]
     summary: Get user by ID

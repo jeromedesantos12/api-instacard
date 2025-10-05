@@ -120,6 +120,40 @@ export async function getUserById(
   }
 }
 
+export async function getUserByUsername(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { username } = req.params;
+    const user = await prisma.user.findUnique({
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        email: true,
+        avatar_url: true,
+        bio: true,
+        headline: true,
+        theme_preset: true,
+        bg_color: true,
+        bg_image_url: true,
+        created_at: true,
+        updated_at: true,
+      },
+      where: { username },
+    });
+    res.status(200).json({
+      status: "Success",
+      message: "Fetch user success!",
+      data: user,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function updateUser(
   req: Request,
   res: Response,
