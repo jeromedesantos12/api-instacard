@@ -30,10 +30,10 @@ export function isSame(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export function isSameReq(req: Request, res: Response, next: NextFunction) {
-  const idBody = req.body.user_id;
+export function isSameUserId(req: Request, res: Response, next: NextFunction) {
+  const existingUserId = (req as any).model.id;
   const idLog = (req as any).user.id;
-  if (idBody !== idLog) {
+  if (existingUserId !== idLog) {
     throw appError("You cannot see other user's data!", 400);
   }
   next();
@@ -46,6 +46,30 @@ export function isExist(modelName: string) {
       const name = modelName.charAt(0).toUpperCase() + modelName.slice(1);
       const model = await (prisma as any)[modelName].findUnique({
         where: { id },
+      });
+      if (model === null) {
+        throw appError(`${name} Not Found!`, 404);
+      }
+      (req as any).model = model;
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}
+
+export function isExistUserId(modelName: string) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const userId = (req as any).user.id;
+      const name = modelName.charAt(0).toUpperCase() + modelName.slice(1);
+      const model = await (prisma as any)[modelName].findUnique({
+        where: {
+          id,
+          user_id: userId,
+          is_active: true,
+        },
       });
       if (model === null) {
         throw appError(`${name} Not Found!`, 404);

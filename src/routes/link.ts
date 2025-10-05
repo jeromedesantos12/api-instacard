@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { auth, isSameReq } from "../middlewares/auth";
+import {
+  auth,
+  isExist,
+  isExistUserId,
+  isSameUserId,
+} from "../middlewares/auth";
 import {
   deleteLink,
   getLinkById,
@@ -16,14 +21,22 @@ const router = Router();
 router.get("/", auth, getLinks);
 router.get("/:id", auth, getLinkById);
 router.post("/", auth, validate(linkSchema), postLink);
-router.patch("/:id", auth, isSameReq, validate(linkSchema), updateLink);
+router.patch(
+  "/:id",
+  auth,
+  isExistUserId("link"),
+  isSameUserId,
+  validate(linkSchema),
+  updateLink
+);
 router.patch(
   "/:id/reorder",
   auth,
-  isSameReq,
+  isExistUserId("link"),
+  isSameUserId,
   validate(orderSchema),
   updateLinkOrder
 );
-router.delete("/:id", auth, isSameReq, deleteLink);
+router.delete("/:id", auth, isExistUserId("link"), isSameUserId, deleteLink);
 
 export default router;
