@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { home } from "../middlewares/home";
 import { notFound } from "../middlewares/notFound";
 import auth from "../routes/auth";
 import user from "../routes/user";

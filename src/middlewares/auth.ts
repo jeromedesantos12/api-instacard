@@ -23,8 +23,17 @@ export function nonAuth(req: Request, res: Response, next: NextFunction) {
 
 export function isSame(req: Request, res: Response, next: NextFunction) {
   const idParam = req.params.id;
-  const { id } = (req as any).user;
-  if (idParam !== id) {
+  const idLog = (req as any).user.id;
+  if (idParam !== idLog) {
+    throw appError("You cannot see other user's data!", 400);
+  }
+  next();
+}
+
+export function isSameReq(req: Request, res: Response, next: NextFunction) {
+  const idBody = req.body.user_id;
+  const idLog = (req as any).user.id;
+  if (idBody !== idLog) {
     throw appError("You cannot see other user's data!", 400);
   }
   next();
