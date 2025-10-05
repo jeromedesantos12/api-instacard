@@ -31,7 +31,7 @@ export function isSame(req: Request, res: Response, next: NextFunction) {
 }
 
 export function isSameUserId(req: Request, res: Response, next: NextFunction) {
-  const existingUserId = (req as any).model.id;
+  const existingUserId = (req as any).model.user_id;
   const idLog = (req as any).user.id;
   if (existingUserId !== idLog) {
     throw appError("You cannot see other user's data!", 400);
