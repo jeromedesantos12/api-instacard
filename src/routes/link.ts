@@ -1,10 +1,5 @@
 import { Router } from "express";
-import {
-  auth,
-  isExist,
-  isExistUserId,
-  isSameUserId,
-} from "../middlewares/auth";
+import { auth, isExistUserId, isSameUserId } from "../middlewares/auth";
 import {
   deleteLink,
   getLinkById,
