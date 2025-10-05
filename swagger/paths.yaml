@@ -1,0 +1,253 @@
+# /swagger/paths.yaml
+# Menggabungkan semua Paths API
+
+# --- AUTH ROUTES (/auth) ---
+/auth/login:
+  post:
+    tags: [Auth]
+    summary: User login
+    operationId: loginAuth
+    security: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LoginRequest"
+    responses:
+      "200": { description: Success }
+      "401": { $ref: "#/components/responses/Unauthorized" }
+
+/auth/register:
+  post:
+    tags: [Auth]
+    summary: Register new user
+    operationId: registerAuth
+    security: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RegisterRequest"
+    responses:
+      "201": { description: Created }
+      "409": { $ref: "#/components/responses/Conflict" }
+
+/auth/logout:
+  post:
+    tags: [Auth]
+    summary: Logout user
+    operationId: logoutAuth # Mengesampingkan security global (tidak butuh token untuk logout cookie)
+    responses:
+      "200": { description: Success }
+
+/auth/verify:
+  get:
+    tags: [Auth]
+    summary: Verify user session
+    operationId: verifyAuth
+    responses:
+      "200": { description: Success }
+      "401": { $ref: "#/components/responses/Unauthorized" }
+
+/auth/reset/{id}:
+  put:
+    tags: [Auth]
+    summary: Reset password
+    operationId: resetAuth
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ResetRequest"
+    responses:
+      "200": { description: Success }
+      "401": { $ref: "#/components/responses/Unauthorized" }
+      "404": { $ref: "#/components/responses/NotFound" }
+
+# --- USER ROUTES (/user) ---
+/user:
+  get:
+    tags: [User]
+    summary: Get all users
+    operationId: getUsers
+    parameters:
+      - $ref: "#/components/parameters/SearchQuery"
+      - $ref: "#/components/parameters/PaginationPage"
+      - $ref: "#/components/parameters/PaginationLimit"
+    responses:
+      "200": { description: Success }
+
+/user/{id}:
+  get:
+    tags: [User]
+    summary: Get user by ID
+    operationId: getUserById
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    responses:
+      "200": { description: Success }
+      "404": { $ref: "#/components/responses/NotFound" }
+  patch:
+    tags: [User]
+    summary: Update user profile (with file uploads)
+    operationId: updateUser
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/UpdateUserRequest"
+    responses:
+      "200": { description: Success }
+      "404": { $ref: "#/components/responses/NotFound" }
+
+# --- LINK ROUTES (/link) ---
+/link:
+  get:
+    tags: [Link]
+    summary: Get user links
+    operationId: getLinks
+    parameters:
+      - $ref: "#/components/parameters/PaginationPage"
+      - $ref: "#/components/parameters/PaginationLimit"
+    responses:
+      "200": { description: Success }
+  post:
+    tags: [Link]
+    summary: Create new link
+    operationId: postLink # Asumsi postLink adalah controller untuk router.post("/")
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LinkRequest"
+    responses:
+      "201": { description: Created }
+
+/link/{id}:
+  get:
+    tags: [Link]
+    summary: Get link by ID
+    operationId: getLinkById
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    responses:
+      "200": { description: Success }
+  patch:
+    tags: [Link]
+    summary: Update link details
+    operationId: updateLink
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LinkRequest"
+    responses:
+      "200": { description: Success }
+  delete:
+    tags: [Link]
+    summary: Soft-delete a link
+    operationId: deleteLink
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    responses:
+      "200": { description: Success }
+
+/link/{id}/reorder:
+  patch:
+    tags: [Link]
+    summary: Reorder link
+    operationId: updateLinkOrder
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderRequest"
+    responses:
+      "200": { description: Success }
+
+# --- SOCIAL ROUTES (/social) ---
+/social:
+  get:
+    tags: [Social]
+    summary: Get user social links
+    operationId: getSocials
+    parameters:
+      - $ref: "#/components/parameters/PaginationPage"
+      - $ref: "#/components/parameters/PaginationLimit"
+    responses:
+      "200": { description: Success }
+  post:
+    tags: [Social]
+    summary: Create new social link
+    operationId: postSocial # Asumsi postSocial adalah controller untuk router.post("/")
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SocialRequest"
+    responses:
+      "201": { description: Created }
+
+/social/{id}:
+  get:
+    tags: [Social]
+    summary: Get social link by ID
+    operationId: getSocialById
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    responses:
+      "200": { description: Success }
+  patch:
+    tags: [Social]
+    summary: Update social link details
+    operationId: updateSocial
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SocialRequest"
+    responses:
+      "200": { description: Success }
+  delete:
+    tags: [Social]
+    summary: Soft-delete a social link
+    operationId: deleteSocial
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    responses:
+      "200": { description: Success }
+
+/social/{id}/reorder:
+  patch:
+    tags: [Social]
+    summary: Reorder social link
+    operationId: updateSocialOrder
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderRequest"
+    responses:
+      "200": { description: Success }

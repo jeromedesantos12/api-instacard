@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { config } from "dotenv";
+import { home } from "../middlewares/home";
+import { notFound } from "../middlewares/notFound";
 import auth from "../routes/auth";
 import user from "../routes/user";
 import link from "../routes/link";
 import social from "../routes/social";
-
-config();
 
 const api = Router();
 const router = Router();
@@ -15,6 +14,7 @@ api.use("/auth", auth);
 api.use("/user", user);
 api.use("/link", link);
 api.use("/social", social);
+api.use("*catchall", notFound);
 
 router.use(`/api/${version}`, api);
 

@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { appError } from "../utils/error";
+
+const version = process.env.API_VERSION;
 
 export function notFound(req: Request, res: Response, next: NextFunction) {
   try {
-    throw appError("Route Not Found!", 404);
+    res.send(`API version ${version}`);
   } catch (err) {
     next(err);
   }

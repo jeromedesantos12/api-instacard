@@ -5,9 +5,6 @@ import { saveFiles } from "../middlewares/file";
 import { upload } from "../utils/multer";
 import { userSchema } from "../utils/joi";
 import { getUsers, getUserById, updateUser } from "../controllers/user";
-import { config } from "dotenv";
-
-config();
 
 const router = Router();
 

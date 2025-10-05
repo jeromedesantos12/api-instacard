@@ -1,0 +1,145 @@
+# /swagger/models.yaml
+# Semua Schema, Parameter, Security, dan Responses
+
+securitySchemes:
+  cookieAuth:
+    type: apiKey
+    in: cookie
+    name: token # Nama cookie untuk otentikasi
+
+parameters:
+  IdPath:
+    name: id
+    in: path
+    required: true
+    schema: { type: string, format: uuid }
+    description: Unique ID (UUID) of the resource.
+  SearchQuery:
+    name: search
+    in: query
+    required: false
+    schema: { type: string }
+    description: Text to search within usernames or names.
+  PaginationPage:
+    name: page
+    in: query
+    required: false
+    schema: { type: integer, default: 1 }
+    description: Page number for pagination.
+  PaginationLimit:
+    name: limit
+    in: query
+    required: false
+    schema: { type: integer, default: 10 }
+    description: Number of items per page.
+
+responses:
+  Unauthorized:
+    description: Unauthorized - Invalid or missing token/credentials.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status: { type: string, example: Error }
+            message: { type: string, example: Invalid password }
+  NotFound:
+    description: Not Found - Resource does not exist.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status: { type: string, example: Error }
+            message: { type: string, example: User not found }
+  Conflict:
+    description: Conflict - Resource already exists (e.g., username/email taken).
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status: { type: string, example: Error }
+            message: { type: string, example: Username already taken }
+
+schemas:
+  # --- AUTH SCHEMAS ---
+  LoginRequest:
+    type: object
+    required: [emailOrUsername, password]
+    properties:
+      emailOrUsername: { type: string, example: user@example.com }
+      password: { type: string, format: password, example: MySecret123 }
+
+  RegisterRequest:
+    type: object
+    required: [name, username, email, password]
+    properties:
+      name: { type: string, example: John Doe }
+      username: { type: string, example: johndoe_dev }
+      email: { type: string, format: email, example: john.doe@example.com }
+      password: { type: string, format: password, example: MySecret123 }
+
+  ResetRequest:
+    type: object
+    required: [password, newPassword]
+    properties:
+      password:
+        { type: string, format: password, description: Existing password. }
+      newPassword:
+        { type: string, format: password, description: The new password. }
+
+  # --- USER SCHEMAS ---
+  UpdateUserRequest:
+    type: object
+    properties:
+      name: { type: string }
+      username: { type: string }
+      bio: { type: string, nullable: true }
+      headline: { type: string, nullable: true }
+      theme_preset: { type: string, nullable: true }
+      accent_color: { type: string, nullable: true }
+      bg_color: { type: string, nullable: true }
+      avatar_url:
+        { type: string, format: binary, description: File upload for avatar. }
+      bg_image_url:
+        {
+          type: string,
+          format: binary,
+          description: File upload for background image.,
+        }
+      remove_avatar:
+        {
+          type: string,
+          enum: ["ok"],
+          description: Set to 'ok' to remove existing avatar.,
+        }
+      remove_bg:
+        {
+          type: string,
+          enum: ["ok"],
+          description: Set to 'ok' to remove existing background image.,
+        }
+
+  # --- LINK & SOCIAL SCHEMAS ---
+  LinkRequest:
+    type: object
+    required: [title, url]
+    properties:
+      title: { type: string }
+      url: { type: string, format: url }
+
+  SocialRequest:
+    type: object
+    required: [platform, url]
+    properties:
+      platform: { type: string, description: Social platform name. }
+      handle: { type: string, nullable: true }
+      url: { type: string, format: url }
+
+  OrderRequest:
+    type: object
+    required: [order_index]
+    properties:
+      order_index:
+        { type: integer, description: New index position for reordering. }

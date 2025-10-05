@@ -1,0 +1,27 @@
+# /swagger/api.yaml
+# File Utama yang Menggabungkan Semua Spesifikasi
+
+openapi: 3.0.0
+info:
+  title: InstaCard API (Modular Design-First)
+  version: 1.0.0
+  description: API untuk layanan Linktree, dipecah berdasarkan modul.
+
+servers:
+  # Ini harus sesuai dengan prefix router utama Anda: /api/{version}
+  - url: /api/{version}
+    description: Base API Server
+    variables:
+      version:
+        default: v1 # ASUMSI: default API_VERSION di .env adalah v1
+
+# Mengambil semua paths dari file auth, link, social, dan user
+paths:
+  $ref: "./paths.yaml"
+
+# Mengambil semua schemas, security schemes, dan parameter
+components:
+  $ref: "./models.yaml"
+
+security:
+  - cookieAuth: [] # Default security scheme untuk seluruh API yang memerlukan otentikasi

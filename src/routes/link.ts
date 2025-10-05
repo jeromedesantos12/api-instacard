@@ -7,11 +7,8 @@ import {
   updateLink,
   updateLinkOrder,
 } from "../controllers/link";
-import { config } from "dotenv";
 import { validate } from "../middlewares/validate";
 import { orderSchema, linkSchema } from "../utils/joi";
-
-config();
 
 const router = Router();
 
