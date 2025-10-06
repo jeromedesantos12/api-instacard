@@ -14,8 +14,8 @@ import {
 const router = Router();
 
 router.get("/", auth, getUsers);
-router.get("/u/:username", auth, getUserByUsername);
-router.get("/me/:id", getUserById);
+router.get("/u/:username", getUserByUsername);
+router.get("/me/:id", auth, getUserById);
 router.patch(
   "/me/:id",
   auth,
