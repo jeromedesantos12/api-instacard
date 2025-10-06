@@ -1,8 +1,65 @@
 import { Request, Response, NextFunction } from "express";
+import { google } from "googleapis";
 import { prisma } from "../connections/prisma";
 import { appError } from "../utils/error";
 import { signToken } from "../utils/jwt";
 import { hashPassword, comparePassword } from "../utils/bcrypt";
+import { authrizationUrl, oauth2Client } from "../utils/google";
+
+export function googleAuth(req: Request, res: Response, next: NextFunction) {
+  res.redirect(authrizationUrl);
+}
+
+export async function googleCallback(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { code } = req.query;
+  const { tokens } = await oauth2Client.getToken(code as string);
+  oauth2Client.setCredentials(tokens);
+  const oauth2 = google.oauth2({
+    auth: oauth2Client,
+    version: "v2",
+  });
+  const { data } = await oauth2.userinfo.get();
+  if (
+    data.email === undefined ||
+    data.name === undefined ||
+    data.picture === undefined
+  ) {
+    throw appError("Invalid credentials", 401);
+  }
+  let user = await prisma.user.findUnique({
+    where: {
+      email: data.email as string,
+    },
+  });
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        name: data.name as string,
+        username: (data.email as string).split("@")[0] as string,
+        email: data.email as string,
+        avatar_url: data.picture,
+        password: "",
+      },
+    });
+  }
+  const token = signToken({
+    id: user.id,
+    username: user.username,
+  });
+  res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "strict",
+      path: "/",
+    })
+    .redirect("http://localhost:8080/");
+}
 
 export async function loginAuth(
   req: Request,

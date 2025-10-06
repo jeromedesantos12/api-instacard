@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { auth, nonAuth, isExist, isSame } from "../middlewares/auth";
+import { auth, nonAuth, isExist } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import { registerSchema, resetSchema } from "../utils/joi";
 import {
+  googleAuth,
+  googleCallback,
   loginAuth,
   logoutAuth,
   registerAuth,
@@ -23,5 +25,7 @@ router.put(
   resetAuth
 );
 router.get("/verify", auth, verifyAuth);
+router.get("/google", nonAuth, googleAuth);
+router.get("/google/callback", nonAuth, googleCallback);
 
 export default router;

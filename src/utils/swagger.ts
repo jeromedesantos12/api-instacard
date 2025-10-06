@@ -1,20 +1,11 @@
+import YAML from "yamljs";
 import { resolve } from "path";
 
-const url = process.env.BASE_URL;
-export const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "InstaCard API",
-      description: "API for linktree",
-      version: "1.0.0",
-    },
-    servers: [
-      {
-        url,
-        description: "Local Server",
-      },
-    ],
-  },
-  apis: [resolve(process.cwd(), "src/routes/*.ts")],
+const swaggerApi = YAML.load(resolve(process.cwd(), "swagger/api.yaml"));
+const swaggerPaths = YAML.load(resolve(process.cwd(), "swagger/paths.yaml"));
+const swaggerModels = YAML.load(resolve(process.cwd(), "swagger/models.yaml"));
+export const swaggerDocument = {
+  ...swaggerApi,
+  paths: swaggerPaths,
+  components: swaggerModels,
 };
