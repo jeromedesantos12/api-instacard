@@ -30,7 +30,7 @@ export function isSame(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export function isSameUserId(req: Request, res: Response, next: NextFunction) {
+export function isSameBody(req: Request, res: Response, next: NextFunction) {
   const existingUserId = (req as any).model.user_id;
   const idLog = (req as any).user.id;
   if (existingUserId !== idLog) {
@@ -58,7 +58,7 @@ export function isExist(modelName: string) {
   };
 }
 
-export function isExistUserId(modelName: string) {
+export function isExistSocial(modelName: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -69,6 +69,29 @@ export function isExistUserId(modelName: string) {
           id,
           user_id: userId,
           is_active: true,
+        },
+      });
+      if (model === null) {
+        throw appError(`${name} Not Found!`, 404);
+      }
+      (req as any).model = model;
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}
+
+export function isExistLink(modelName: string) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const userId = (req as any).user.id;
+      const name = modelName.charAt(0).toUpperCase() + modelName.slice(1);
+      const model = await (prisma as any)[modelName].findUnique({
+        where: {
+          id,
+          user_id: userId,
         },
       });
       if (model === null) {

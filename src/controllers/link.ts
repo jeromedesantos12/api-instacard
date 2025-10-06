@@ -18,7 +18,6 @@ export async function getLinks(
     const links = await prisma.link.findMany({
       where: {
         user_id: userId,
-        is_active: true,
       },
       take: limit,
       skip: skip,
@@ -29,7 +28,6 @@ export async function getLinks(
     const total = await prisma.link.count({
       where: {
         user_id: userId,
-        is_active: true,
       },
     });
     let results = null;
@@ -70,7 +68,6 @@ export async function getLinkById(
       where: {
         id,
         user_id: userId,
-        is_active: true,
       },
     });
     res.status(200).json({
@@ -105,7 +102,6 @@ export async function postLink(
         title,
         url,
         order_index: newOrderIndex,
-        is_active: true,
         user_id: userId,
       },
     });
@@ -132,7 +128,6 @@ export async function updateLink(
       where: {
         id,
         user_id: userId,
-        is_active: true,
       },
       data: {
         title,
@@ -162,7 +157,6 @@ export async function updateLinkOrder(
       where: {
         id,
         user_id: userId,
-        is_active: true,
       },
       data: {
         order_index,
@@ -186,14 +180,10 @@ export async function deleteLink(
   try {
     const { id } = req.params;
     const userId = (req as any).user.id;
-    const link = await prisma.link.update({
+    const link = await prisma.link.delete({
       where: {
         id,
         user_id: userId,
-        is_active: true,
-      },
-      data: {
-        is_active: false,
       },
     });
     res.status(200).json({

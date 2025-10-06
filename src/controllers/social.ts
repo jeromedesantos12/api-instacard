@@ -180,6 +180,34 @@ export async function updateSocialOrder(
   }
 }
 
+export async function restoreSocial(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+    const social = await prisma.socialLink.update({
+      where: {
+        id,
+        user_id: userId,
+        is_active: false,
+      },
+      data: {
+        is_active: true,
+      },
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Restore social success",
+      data: social,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function deleteSocial(
   req: Request,
   res: Response,

@@ -168,7 +168,7 @@
       "200": { description: Success }
   delete:
     tags: [Link]
-    summary: Soft-delete a link
+    summary: Hard delete a link
     operationId: deleteLink
     parameters:
       - $ref: "#/components/parameters/IdPath"
@@ -236,6 +236,14 @@
         application/json:
           schema:
             $ref: "#/components/schemas/SocialRequest"
+    responses:
+      "200": { description: Success }
+  put:
+    tags: [Social]
+    summary: Restore a social link
+    operationId: restoreSocial
+    parameters:
+      - $ref: "#/components/parameters/IdPath"
     responses:
       "200": { description: Success }
   delete:
