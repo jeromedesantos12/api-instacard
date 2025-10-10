@@ -43,6 +43,7 @@ export async function googleCallback(
         email: data.email as string,
         avatar_url: data.picture,
         password: "",
+        provider: "GOOGLE",
       },
     });
   }
@@ -70,6 +71,7 @@ export async function loginAuth(
     const { emailOrUsername, password } = req.body;
     const user = await prisma.user.findFirst({
       where: {
+        provider: "EMAIL",
         OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
       },
     });

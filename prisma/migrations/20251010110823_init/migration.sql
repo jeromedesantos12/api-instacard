@@ -6,6 +6,7 @@ CREATE TABLE "kelompok"."users" (
     "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "avatar_url" TEXT,
+    "provider" TEXT NOT NULL DEFAULT 'EMAIL',
     "bio" TEXT,
     "headline" TEXT,
     "theme_preset" TEXT,

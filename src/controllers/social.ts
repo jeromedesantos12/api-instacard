@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../connections/prisma";
-import { redis } from "../connections/redis";
 
 export async function getSocials(
   req: Request,
@@ -32,21 +31,10 @@ export async function getSocials(
         is_active: true,
       },
     });
-    let results = null;
-    const key = "getLinks";
-    const value = await redis.get(key);
-    if (value) {
-      results = JSON.parse(value);
-    } else {
-      results = socials;
-      await redis.set(key, JSON.stringify(results), {
-        EX: 300,
-      });
-    }
     res.status(200).json({
       status: "success",
       message: "Fetch socials success!",
-      data: results,
+      data: socials,
       meta: {
         total,
         page,

@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../connections/prisma";
-import { redis } from "../connections/redis";
 
 export async function getLinks(
   req: Request,
@@ -30,21 +29,10 @@ export async function getLinks(
         user_id: userId,
       },
     });
-    let results = null;
-    const key = "getLinks";
-    const value = await redis.get(key);
-    if (value) {
-      results = JSON.parse(value);
-    } else {
-      results = links;
-      await redis.set(key, JSON.stringify(results), {
-        EX: 300,
-      });
-    }
     res.status(200).json({
       status: "success",
       message: "Fetch links success!",
-      data: results,
+      data: links,
       meta: {
         total,
         page,

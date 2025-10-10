@@ -3,7 +3,6 @@ import { unlink as unlinkAsync } from "fs/promises";
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 import { prisma } from "../connections/prisma";
-import { redis } from "../connections/redis";
 import { appError } from "../utils/error";
 
 export async function getUsers(
@@ -60,21 +59,10 @@ export async function getUsers(
         id: userId,
       },
     });
-    let results = null;
-    const key = "getUsers:" + search;
-    const value = await redis.get(key);
-    if (value) {
-      results = JSON.parse(value);
-    } else {
-      results = users;
-      await redis.set(key, JSON.stringify(results), {
-        EX: 300,
-      });
-    }
     res.status(200).json({
       status: "Success",
       message: "Fetch users success!",
-      data: results,
+      data: users,
       meta: {
         total,
         page,
