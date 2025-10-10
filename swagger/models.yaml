@@ -125,7 +125,7 @@ schemas:
           enum: ["ok"],
           description: Set to 'ok' to remove existing avatar.,
         }
-      remove_bg:
+      remove_bg_image:
         {
           type: string,
           enum: ["ok"],

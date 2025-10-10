@@ -14,7 +14,17 @@ export const userSchema = Joi.object({
       "string.pattern.base":
         "Username must be 3-30 alphanumeric characters or underscores.",
     }),
-  remove: Joi.string().optional(),
+  bio: Joi.string().max(500).allow(null, "").optional().messages({
+    "string.max": "Bio cannot exceed 500 characters.",
+  }),
+  headline: Joi.string().max(500).allow(null, "").optional().messages({
+    "string.max": "Headline cannot exceed 500 characters.",
+  }),
+  theme_preset: Joi.string().optional(),
+  accent_color: Joi.string().optional(),
+  bg_color: Joi.string().optional(),
+  remove_avatar: Joi.string().optional(),
+  remove_bg_image: Joi.string().optional(),
   email: Joi.string().optional(),
   password: Joi.string().optional(),
   avatar_url: Joi.string().uri().allow(null, "").optional().messages({
@@ -22,9 +32,6 @@ export const userSchema = Joi.object({
   }),
   bg_image_url: Joi.string().uri().allow(null, "").optional().messages({
     "string.uri": "Invalid image URL.",
-  }),
-  bio: Joi.string().max(500).allow(null, "").optional().messages({
-    "string.max": "Bio cannot exceed 500 characters.",
   }),
 });
 

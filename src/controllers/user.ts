@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { unlink as unlinkAsync } from "fs/promises";
-import { writeFileSync } from "fs";
+import { unlink, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { prisma } from "../connections/prisma";
 import { appError } from "../utils/error";
@@ -147,11 +146,32 @@ export async function updateUser(
   res: Response,
   next: NextFunction
 ) {
+  const model = (req as any).model;
+  const processedFiles = (req as any).processedFiles || {};
+  const oldAvatarName = model?.avatar_url;
+  const oldBgImageName = model?.bg_image_url;
+  const newAvatarName = processedFiles?.avatar_url.fileName;
+  const newBgImageName = processedFiles?.bg_image_url.fileName;
+  const newAvatarBuffer = processedFiles?.avatar_url.fileBuffer;
+  const newBgImageBuffer = processedFiles?.bg_image_url.fileBuffer;
+  const uploadsDir = resolve(process.cwd(), "uploads", "user");
+  const oldAvatarPath = oldAvatarName
+    ? resolve(uploadsDir, "avatar", oldAvatarName)
+    : null;
+  const oldBgImagePath = oldBgImageName
+    ? resolve(uploadsDir, "image", oldBgImageName)
+    : null;
+  const newAvatarPath = newAvatarName
+    ? resolve(uploadsDir, "avatar", newAvatarName)
+    : null;
+  const newBgImagePath = newBgImageName
+    ? resolve(uploadsDir, "image", newBgImageName)
+    : null;
   try {
     const { id } = req.params;
     const {
       remove_avatar,
-      remove_bg,
+      remove_bg_image,
       name,
       username,
       bio,
@@ -160,16 +180,6 @@ export async function updateUser(
       accent_color,
       bg_color,
     } = req.body;
-    const existingUser = (req as any).model;
-    const newAvatar = (req as any)?.processedFiles?.avatar_url;
-    const newBgImage = (req as any)?.processedFiles?.bg_image_url;
-    const uploadsDir = resolve(process.cwd(), "uploads");
-    const oldAvatarPath = existingUser.avatar_url
-      ? resolve(uploadsDir, existingUser.avatar_url)
-      : null;
-    const oldBgImagePath = existingUser.bg_image_url
-      ? resolve(uploadsDir, existingUser.bg_image_url)
-      : null;
     const dataToUpdate: any = {
       username,
       name,
@@ -179,44 +189,38 @@ export async function updateUser(
       accent_color,
       bg_color,
     };
-    if (remove_avatar === "ok") {
+    if (newAvatarBuffer && newAvatarPath) {
+      await writeFile(newAvatarPath, newAvatarBuffer);
+      dataToUpdate.avatar_url = newAvatarName;
+    } else if (remove_avatar === "ok") {
       dataToUpdate.avatar_url = null;
-    } else if (newAvatar) {
-      dataToUpdate.avatar_url = `user/avatar/${newAvatar.fileName}`;
     }
-    if (remove_bg === "ok") {
+    if (newBgImageBuffer && newBgImagePath) {
+      await writeFile(newBgImagePath, newBgImageBuffer);
+      dataToUpdate.bg_image_url = newBgImageName;
+    } else if (remove_bg_image === "ok") {
       dataToUpdate.bg_image_url = null;
-    } else if (newBgImage) {
-      dataToUpdate.bg_image_url = `user/image/${newBgImage.fileName}`;
     }
     const updatedUser = await prisma.user.update({
-      data: dataToUpdate,
       where: { id },
+      data: dataToUpdate,
     });
-    const filesToDelete = [];
-    if ((remove_avatar === "ok" || newAvatar) && oldAvatarPath) {
+    const filesToDelete: string[] = [];
+    if ((remove_avatar === "ok" || newAvatarName) && oldAvatarPath) {
       filesToDelete.push(oldAvatarPath);
     }
-    if ((remove_bg === "ok" || newBgImage) && oldBgImagePath) {
+    if ((remove_bg_image === "ok" || newBgImageName) && oldBgImagePath) {
       filesToDelete.push(oldBgImagePath);
     }
     await Promise.all(
-      filesToDelete.map((path) =>
-        unlinkAsync(path).catch((err) => {
+      filesToDelete.map((file) =>
+        unlink(file).catch((err) => {
           if (err.code !== "ENOENT") {
             throw appError("Failed to clean up old file.", 500);
           }
         })
       )
     );
-    if (newAvatar) {
-      const newPath = resolve(uploadsDir, "user", "avatar", newAvatar.fileName);
-      writeFileSync(newPath, newAvatar.fileBuffer);
-    }
-    if (newBgImage) {
-      const newPath = resolve(uploadsDir, "user", "image", newBgImage.fileName);
-      writeFileSync(newPath, newBgImage.fileBuffer);
-    }
     const user = await prisma.user.findUnique({
       select: {
         id: true,
@@ -240,6 +244,18 @@ export async function updateUser(
       data: user,
     });
   } catch (err) {
+    const rollbackPaths: string[] = [];
+    if (newAvatarPath) rollbackPaths.push(newAvatarPath);
+    if (newBgImagePath) rollbackPaths.push(newBgImagePath);
+    await Promise.all(
+      rollbackPaths.map((file) =>
+        unlink(file).catch((err) => {
+          if (err.code !== "ENOENT") {
+            throw appError("Failed to clean up old file.", 500);
+          }
+        })
+      )
+    );
     next(err);
   }
 }
