@@ -15,7 +15,7 @@ const router = Router();
 
 router.get("/u/:username", getUserByUsername);
 router.get("/me", auth, getUser);
-router.post("/bio", generateBio);
+router.post("/bio", auth, generateBio);
 router.patch(
   "/me",
   auth,
