@@ -117,6 +117,7 @@ export async function updateUser(
     const dataToUpdate: any = {
       name,
       bio,
+      theme,
     };
     if (newAvatarBuffer && newAvatarPath) {
       await writeFile(newAvatarPath, newAvatarBuffer);

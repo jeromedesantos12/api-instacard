@@ -19,7 +19,6 @@ router.post("/bio", auth, generateBio);
 router.patch(
   "/me",
   auth,
-  isExist("user"),
   upload.fields([{ name: "avatar_url", maxCount: 1 }]),
   validate(userSchema),
   saveFiles,

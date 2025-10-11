@@ -108,8 +108,9 @@ schemas:
   UpdateUserRequest:
     type: object
     properties:
-      name: { type: string }
+      name: { type: string, nullable: true }
       bio: { type: string, nullable: true }
+      theme: { type: string, nullable: true }
       avatar_url:
         { type: string, format: binary, description: File upload for avatar. }
 
