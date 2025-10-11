@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auth, isExistSocial, isSameBody } from "../middlewares/auth";
+import { auth, isExistSocial, isSame } from "../middlewares/auth";
 import {
   deleteSocial,
   getSocialById,
@@ -17,16 +17,16 @@ const router = Router();
 router.get("/", auth, getSocials);
 router.get("/:id", auth, getSocialById);
 router.post("/", auth, validate(socialSchema), postSocial);
-router.patch("/:id", auth, isExistSocial("social"), isSameBody, updateSocial);
+router.patch("/:id", auth, isExistSocial("social"), isSame, updateSocial);
 router.patch(
   "/:id/reorder",
   auth,
   isExistSocial("social"),
-  isSameBody,
+  isSame,
   validate(orderSchema),
   updateSocialOrder
 );
-router.put("/:id", auth, isExistSocial("social"), isSameBody, restoreSocial);
-router.delete("/:id", auth, isExistSocial("social"), isSameBody, deleteSocial);
+router.put("/:id", auth, isExistSocial("social"), isSame, restoreSocial);
+router.delete("/:id", auth, isExistSocial("social"), isSame, deleteSocial);
 
 export default router;

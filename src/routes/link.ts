@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auth, isExistLink, isSameBody } from "../middlewares/auth";
+import { auth, isExistLink, isSame } from "../middlewares/auth";
 import {
   deleteLink,
   getLinkById,
@@ -20,7 +20,7 @@ router.patch(
   "/:id",
   auth,
   isExistLink("link"),
-  isSameBody,
+  isSame,
   validate(linkSchema),
   updateLink
 );
@@ -28,10 +28,10 @@ router.patch(
   "/:id/reorder",
   auth,
   isExistLink("link"),
-  isSameBody,
+  isSame,
   validate(orderSchema),
   updateLinkOrder
 );
-router.delete("/:id", auth, isExistLink("link"), isSameBody, deleteLink);
+router.delete("/:id", auth, isExistLink("link"), isSame, deleteLink);
 
 export default router;
