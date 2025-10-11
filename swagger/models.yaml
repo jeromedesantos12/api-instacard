@@ -90,15 +90,6 @@ schemas:
       email: { type: string, format: email, example: john.doe@example.com }
       password: { type: string, format: password, example: MySecret123 }
 
-  ResetRequest:
-    type: object
-    required: [password, newPassword]
-    properties:
-      password:
-        { type: string, format: password, description: Existing password. }
-      newPassword:
-        { type: string, format: password, description: The new password. }
-
   # --- USER SCHEMAS ---
   generateBio:
     type: object
@@ -112,7 +103,12 @@ schemas:
       bio: { type: string, nullable: true }
       theme: { type: string, nullable: true }
       avatar_url:
-        { type: string, format: binary, description: File upload for avatar. }
+        {
+          type: string,
+          nullable: true,
+          format: binary,
+          description: File upload for avatar.,
+        }
 
   # --- LINK & SOCIAL SCHEMAS ---
   LinkRequest:
@@ -127,7 +123,7 @@ schemas:
     required: [platform, url]
     properties:
       platform: { type: string, description: Social platform name. }
-      handle: { type: string, nullable: true }
+      handle: { type: string }
       url: { type: string, format: url }
 
   OrderRequest:

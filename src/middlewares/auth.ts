@@ -30,10 +30,10 @@ export function isSame(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export function isExist(modelName: string) {
+export function isExistUser(modelName: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
+      const { id } = (req as any).user;
       const name = modelName.charAt(0).toUpperCase() + modelName.slice(1);
       const model = await (prisma as any)[modelName].findUnique({
         where: { id },

@@ -102,8 +102,8 @@ export async function updateUser(
   const model = (req as any).model;
   const processedFiles = (req as any).processedFiles || {};
   const oldAvatarName = model?.avatar_url;
-  const newAvatarName = processedFiles?.avatar_url.fileName;
-  const newAvatarBuffer = processedFiles?.avatar_url.fileBuffer;
+  const newAvatarName = processedFiles?.avatar_url?.fileName;
+  const newAvatarBuffer = processedFiles?.avatar_url?.fileBuffer;
   const uploadsDir = resolve(process.cwd(), "uploads", "user");
   const oldAvatarPath = oldAvatarName
     ? resolve(uploadsDir, "avatar", oldAvatarName)
@@ -114,14 +114,15 @@ export async function updateUser(
   try {
     const { id } = (req as any).user;
     const { name, bio, theme } = req.body;
-    const dataToUpdate: any = {
-      name,
-      bio,
-      theme,
-    };
+    const dataToUpdate: any = {};
+    if (name) dataToUpdate.name = name;
+    if (bio) dataToUpdate.bio = bio;
+    if (theme) dataToUpdate.theme = theme;
     if (newAvatarBuffer && newAvatarPath) {
       await writeFile(newAvatarPath, newAvatarBuffer);
       dataToUpdate.avatar_url = newAvatarName;
+    } else {
+      dataToUpdate.avatar_url = oldAvatarName;
     }
     const updatedUser = await prisma.user.update({
       where: { id },

@@ -12,7 +12,7 @@ export function isFiles(req: Request, res: Response, next: NextFunction) {
 
 export function saveFiles(req: Request, res: Response, next: NextFunction) {
   const files = (req as any).files;
-  if (files && typeof files === "object") {
+  if (Object.keys(files).length !== 0 && typeof files === "object") {
     const processedFiles: Record<string, any> = {};
     for (const fieldName in files) {
       const fileArray = files[fieldName];

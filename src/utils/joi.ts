@@ -54,17 +54,6 @@ export const registerSchema = Joi.object({
   }),
 });
 
-export const resetSchema = Joi.object({
-  password: Joi.string().min(6).required().messages({
-    "string.min": "Password must be at least 6 characters",
-    "any.required": "Password is a required field",
-  }),
-  newPassword: Joi.string().min(6).required().messages({
-    "string.min": "New Password must be at least 6 characters",
-    "any.required": "New Password is a required field",
-  }),
-});
-
 export const linkSchema = Joi.object({
   title: Joi.string().trim().min(1).required().messages({
     "string.empty": "Title is required.",

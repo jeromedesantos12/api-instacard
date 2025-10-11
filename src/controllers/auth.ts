@@ -187,36 +187,3 @@ export function verifyAuth(req: Request, res: Response, next: NextFunction) {
     next(err);
   }
 }
-
-export async function resetAuth(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-    const { password, newPassword } = req.body;
-    const existingUser = (req as any).model;
-    const isPasswordValid = await comparePassword(
-      password,
-      existingUser.password
-    );
-    if (existingUser && isPasswordValid === false) {
-      throw appError("Invalid password", 401);
-    }
-    const hashedPassword = await hashPassword(newPassword);
-    await prisma.user.update({
-      data: {
-        password: hashedPassword,
-      },
-      where: { id },
-    });
-
-    res.status(200).json({
-      status: "Success",
-      message: `Reset password success!`,
-    });
-  } catch (err) {
-    next(err);
-  }
-}

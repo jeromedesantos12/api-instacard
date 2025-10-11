@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auth, isExist } from "../middlewares/auth";
+import { auth, isExistUser } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import { saveFiles } from "../middlewares/file";
 import { upload } from "../utils/multer";
@@ -19,6 +19,7 @@ router.post("/bio", auth, generateBio);
 router.patch(
   "/me",
   auth,
+  isExistUser("user"),
   upload.fields([{ name: "avatar_url", maxCount: 1 }]),
   validate(userSchema),
   saveFiles,
