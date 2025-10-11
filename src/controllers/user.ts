@@ -3,6 +3,8 @@ import { unlink, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { prisma } from "../connections/prisma";
 import { appError } from "../utils/error";
+import { redis } from "../connections/redis";
+import { rmCache } from "../utils/rm-cache";
 
 export async function getUsers(
   req: Request,
@@ -17,7 +19,41 @@ export async function getUsers(
     const sortField = req.query.sort === "order" ? "order_index" : "created_at";
     const order =
       (req.query.order as string)?.toLowerCase() === "desc" ? "desc" : "asc";
-    const userId = (req as any).user.id;
+
+    // ---
+
+    // ## Bagian Redis (Caching)
+
+    // Buat kunci cache yang unik berdasarkan semua parameter query
+    const keys = `users:${search}:${page}:${limit}:${sortField}:${order}`;
+    const REDIS_EXPIRATION_SECONDS = 3600; // Contoh: Cache bertahan 1 jam
+
+    // 1. Coba ambil data dari Redis
+    const results = await redis.get(keys);
+
+    if (results) {
+      console.log("Cache Hit: Data diambil dari Redis.");
+      const { users, total } = JSON.parse(results);
+
+      // Kembalikan data dari cache
+      return res.status(200).json({
+        status: "Success",
+        message: "Fetch users success! (From Cache)",
+        data: users,
+        meta: {
+          total,
+          page,
+          limit,
+        },
+      });
+    }
+
+    console.log("Cache Miss: Mengambil data dari Database.");
+
+    // ---
+
+    // ## Bagian Prisma (Database)
+
     const whereClause: any = {};
     if (search) {
       whereClause.OR = [
@@ -29,12 +65,15 @@ export async function getUsers(
         },
         {
           full_name: {
+            // Menggunakan full_name seperti di kode aslimu
             contains: search as string,
             mode: "insensitive",
           },
         },
       ];
     }
+
+    // Ambil data users
     const users = await prisma.user.findMany({
       where: whereClause,
       select: {
@@ -50,14 +89,32 @@ export async function getUsers(
       take: limit,
       skip: skip,
       orderBy: {
-        [sortField]: order,
+        [sortField]: order as any, // 'as any' karena order bisa berupa 'asc'|'desc'
       },
     });
+
+    // Ambil total count (tanpa filter/pagination untuk total keseluruhan)
+    // Catatan: Jika total count ini seharusnya berdasarkan filter 'search',
+    // ubah 'where: {}' menjadi 'where: whereClause'.
     const total = await prisma.user.count({
-      where: {
-        id: userId,
-      },
+      where: whereClause, // Total harusnya berdasarkan pencarian juga
     });
+
+    // ---
+
+    // ## Bagian Redis (Set Cache)
+
+    // 2. Simpan data yang baru diambil dari DB ke Redis
+    const dataToCache = { users, total };
+    await redis.setEx(
+      keys,
+      REDIS_EXPIRATION_SECONDS,
+      JSON.stringify(dataToCache)
+    );
+
+    // ---
+
+    // 3. Kembalikan respons
     res.status(200).json({
       status: "Success",
       message: "Fetch users success!",
@@ -238,6 +295,7 @@ export async function updateUser(
       },
       where: { id: updatedUser.id },
     });
+    await rmCache("users:");
     res.status(200).json({
       status: "Success",
       message: "Update user success!",
