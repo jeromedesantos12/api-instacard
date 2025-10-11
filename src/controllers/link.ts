@@ -44,30 +44,6 @@ export async function getLinks(
   }
 }
 
-export async function getLinkById(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-    const userId = (req as any).user.id;
-    const link = await prisma.link.findUnique({
-      where: {
-        id,
-        user_id: userId,
-      },
-    });
-    res.status(200).json({
-      status: "success",
-      message: "Fetch link success!",
-      data: link,
-    });
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function postLink(
   req: Request,
   res: Response,

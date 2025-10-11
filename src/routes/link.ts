@@ -2,7 +2,6 @@ import { Router } from "express";
 import { auth, isExistLink, isSame } from "../middlewares/auth";
 import {
   deleteLink,
-  getLinkById,
   getLinks,
   postLink,
   updateLink,
@@ -14,7 +13,6 @@ import { orderSchema, linkSchema } from "../utils/joi";
 const router = Router();
 
 router.get("/", auth, getLinks);
-router.get("/:id", auth, getLinkById);
 router.post("/", auth, validate(linkSchema), postLink);
 router.patch(
   "/:id",

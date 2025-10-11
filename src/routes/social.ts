@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { auth, isExistSocial, isSame } from "../middlewares/auth";
 import {
-  deleteSocial,
-  getSocialById,
   getSocials,
   postSocial,
   restoreSocial,
   updateSocial,
+  deleteSocial,
   updateSocialOrder,
 } from "../controllers/social";
 import { validate } from "../middlewares/validate";
@@ -15,7 +14,6 @@ import { orderSchema, socialSchema } from "../utils/joi";
 const router = Router();
 
 router.get("/", auth, getSocials);
-router.get("/:id", auth, getSocialById);
 router.post("/", auth, validate(socialSchema), postSocial);
 router.patch("/:id", auth, isExistSocial("social"), isSame, updateSocial);
 router.patch(

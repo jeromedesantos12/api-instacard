@@ -46,31 +46,6 @@ export async function getSocials(
   }
 }
 
-export async function getSocialById(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-    const userId = (req as any).user.id;
-    const social = await prisma.socialLink.findUnique({
-      where: {
-        id,
-        user_id: userId,
-        is_active: true,
-      },
-    });
-    res.status(200).json({
-      status: "success",
-      message: "Fetch social success!",
-      data: social,
-    });
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function postSocial(
   req: Request,
   res: Response,
