@@ -51,13 +51,11 @@
       "200": { description: Success }
       "401": { $ref: "#/components/responses/Unauthorized" }
 
-/auth/reset/{id}:
+/auth/reset:
   put:
     tags: [Auth]
     summary: Reset password
     operationId: resetAuth
-    parameters:
-      - $ref: "#/components/parameters/IdPath"
     requestBody:
       required: true
       content:
@@ -93,13 +91,11 @@
       "200": { description: Success }
       "404": { $ref: "#/components/responses/NotFound" }
 
-/user/me/{id}:
+/user/me:
   get:
     tags: [User]
     summary: Get user by ID
     operationId: getUserById
-    parameters:
-      - $ref: "#/components/parameters/IdPath"
     responses:
       "200": { description: Success }
       "404": { $ref: "#/components/responses/NotFound" }
@@ -107,8 +103,6 @@
     tags: [User]
     summary: Update user profile (with file uploads)
     operationId: updateUser
-    parameters:
-      - $ref: "#/components/parameters/IdPath"
     requestBody:
       required: true
       content:
