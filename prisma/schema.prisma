@@ -14,13 +14,9 @@ model User {
   name        String   // NOT NULL
   password    String   // NOT NULL
   avatar_url  String?
-  provider    String      @default("EMAIL")
+  provider    String   @default("EMAIL")
   bio         String?
-  headline    String?
-  theme_preset String?
-  accent_color String?
-  bg_color     String?
-  bg_image_url String? // bg_image_url text
+  theme       String?
   created_at  DateTime @default(now()) @db.Timestamptz
   updated_at  DateTime @updatedAt @db.Timestamptz
   socialLinks SocialLink[]

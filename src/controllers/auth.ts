@@ -5,7 +5,6 @@ import { appError } from "../utils/error";
 import { signToken } from "../utils/jwt";
 import { hashPassword, comparePassword } from "../utils/bcrypt";
 import { authrizationUrl, oauth2Client } from "../utils/google";
-import { rmCache } from "../utils/rm-cache";
 
 export function googleAuth(req: Request, res: Response, next: NextFunction) {
   res.redirect(authrizationUrl);
@@ -47,7 +46,6 @@ export async function googleCallback(
         provider: "GOOGLE",
       },
     });
-    await rmCache("users:");
   }
   const token = signToken({
     id: user.id,
@@ -164,7 +162,7 @@ export async function registerAuth(
       },
       where: { id: create.id },
     });
-    await rmCache("users:");
+
     res.status(201).json({
       status: "Success",
       message: "Register success!",
@@ -213,7 +211,7 @@ export async function resetAuth(
       },
       where: { id },
     });
-    await rmCache("users:");
+
     res.status(200).json({
       status: "Success",
       message: `Reset password success!`,

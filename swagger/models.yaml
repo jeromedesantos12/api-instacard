@@ -14,7 +14,6 @@ parameters:
     required: true
     schema:
       type: string
-      # Opsional: Tentukan format jika ada aturan ketat (misalnya, hanya huruf kecil, angka, dan underscore)
       format: username
       pattern: "^[a-zA-Z0-9_]{3,30}$"
     description: Unique username (string) of the user resource.
@@ -105,32 +104,9 @@ schemas:
     type: object
     properties:
       name: { type: string }
-      username: { type: string }
       bio: { type: string, nullable: true }
-      headline: { type: string, nullable: true }
-      theme_preset: { type: string, nullable: true }
-      accent_color: { type: string, nullable: true }
-      bg_color: { type: string, nullable: true }
       avatar_url:
         { type: string, format: binary, description: File upload for avatar. }
-      bg_image_url:
-        {
-          type: string,
-          format: binary,
-          description: File upload for background image.,
-        }
-      remove_avatar:
-        {
-          type: string,
-          enum: ["ok"],
-          description: Set to 'ok' to remove existing avatar.,
-        }
-      remove_bg_image:
-        {
-          type: string,
-          enum: ["ok"],
-          description: Set to 'ok' to remove existing background image.,
-        }
 
   # --- LINK & SOCIAL SCHEMAS ---
   LinkRequest:

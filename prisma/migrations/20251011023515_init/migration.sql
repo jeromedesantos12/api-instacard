@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "kelompok"."users" (
+CREATE TABLE "users" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "email" TEXT NOT NULL,
     "username" TEXT NOT NULL,
@@ -8,11 +8,7 @@ CREATE TABLE "kelompok"."users" (
     "avatar_url" TEXT,
     "provider" TEXT NOT NULL DEFAULT 'EMAIL',
     "bio" TEXT,
-    "headline" TEXT,
-    "theme_preset" TEXT,
-    "accent_color" TEXT,
-    "bg_color" TEXT,
-    "bg_image_url" TEXT,
+    "theme" TEXT,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL,
 
@@ -20,7 +16,7 @@ CREATE TABLE "kelompok"."users" (
 );
 
 -- CreateTable
-CREATE TABLE "kelompok"."social_links" (
+CREATE TABLE "social_links" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID NOT NULL,
     "platform" TEXT NOT NULL,
@@ -35,7 +31,7 @@ CREATE TABLE "kelompok"."social_links" (
 );
 
 -- CreateTable
-CREATE TABLE "kelompok"."links" (
+CREATE TABLE "links" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID NOT NULL,
     "title" TEXT NOT NULL,
@@ -48,16 +44,16 @@ CREATE TABLE "kelompok"."links" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "kelompok"."users"("email");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_username_key" ON "kelompok"."users"("username");
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "social_links_user_id_platform_key" ON "kelompok"."social_links"("user_id", "platform");
+CREATE UNIQUE INDEX "social_links_user_id_platform_key" ON "social_links"("user_id", "platform");
 
 -- AddForeignKey
-ALTER TABLE "kelompok"."social_links" ADD CONSTRAINT "social_links_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "kelompok"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "social_links" ADD CONSTRAINT "social_links_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "kelompok"."links" ADD CONSTRAINT "links_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "kelompok"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "links" ADD CONSTRAINT "links_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
