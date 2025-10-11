@@ -3,6 +3,38 @@ import { unlink, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { prisma } from "../connections/prisma";
 import { appError } from "../utils/error";
+import {
+  genAI,
+  generateBioPrompt as aiGenerateBioPrompt,
+  MODEL_NAME,
+} from "../connections/gen-ai";
+
+export async function generateBio(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { bio } = req.body;
+  const promptString = aiGenerateBioPrompt(bio);
+  try {
+    const response = await genAI.models.generateContent({
+      model: MODEL_NAME,
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: promptString }],
+        },
+      ],
+    });
+    res.status(200).json({
+      status: "Success",
+      message: "Fetch AI success!",
+      data: response.text,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function getUser(req: Request, res: Response, next: NextFunction) {
   try {

@@ -4,12 +4,18 @@ import { validate } from "../middlewares/validate";
 import { saveFiles } from "../middlewares/file";
 import { upload } from "../utils/multer";
 import { userSchema } from "../utils/joi";
-import { getUser, updateUser, getUserByUsername } from "../controllers/user";
+import {
+  getUser,
+  updateUser,
+  getUserByUsername,
+  generateBio,
+} from "../controllers/user";
 
 const router = Router();
 
 router.get("/u/:username", getUserByUsername);
 router.get("/me", auth, getUser);
+router.post("/bio", generateBio);
 router.patch(
   "/me",
   auth,

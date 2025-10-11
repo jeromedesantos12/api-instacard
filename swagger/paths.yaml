@@ -91,6 +91,20 @@
       "200": { description: Success }
       "404": { $ref: "#/components/responses/NotFound" }
 
+/user/bio:
+  post:
+    tags: [User]
+    summary: Generate user bio
+    operationId: generateBio
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/generateBio"
+    responses:
+      "200": { description: Success }
+
 /user/me:
   get:
     tags: [User]
