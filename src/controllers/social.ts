@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../connections/prisma";
+import { SocialPlatform } from "@prisma/client";
+import { normalizeUsername, buildSocialUrl } from "../utils/social";
 
 export async function getSocials(
   req: Request,
@@ -46,71 +48,31 @@ export async function getSocials(
   }
 }
 
-export async function postSocial(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function putSocial(req: Request, res: Response) {
   try {
-    const { platform, handle, url } = req.body;
-    const userId = (req as any).user.id;
-    const maxOrder = await prisma.socialLink.aggregate({
-      _max: {
-        order_index: true,
-      },
-      where: {
-        user_id: userId,
-      },
-    });
-    const newOrderIndex = (maxOrder._max.order_index ?? -1) + 1;
-    const social = await prisma.socialLink.create({
-      data: {
-        platform,
-        handle,
-        url,
-        order_index: newOrderIndex,
-        is_active: true,
-        user_id: userId,
-      },
-    });
-    res.status(201).json({
-      status: "success",
-      message: "Create social success",
-      data: social,
-    });
-  } catch (err) {
-    next(err);
-  }
-}
+    const userId = (req as any).user?.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-export async function updateSocial(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-    const { platform, handle, url } = req.body;
-    const userId = (req as any).user.id;
-    const social = await prisma.socialLink.update({
-      where: {
-        id,
-        user_id: userId,
-        is_active: true,
-      },
-      data: {
-        platform,
-        handle,
-        url,
-      },
+    const { platform, username } = req.body || {};
+    if (!platform || !username) {
+      return res
+        .status(400)
+        .json({ message: "Platform and username are required" });
+    }
+
+    const p = platform as SocialPlatform;
+    const normalized = normalizeUsername(p, String(username));
+    const url = buildSocialUrl(p, normalized);
+
+    const saved = await prisma.socialLink.upsert({
+      where: { user_id_platform: { user_id: userId, platform: p } },
+      update: { username: normalized, url },
+      create: { user_id: userId, platform: p, username: normalized, url },
     });
-    res.status(200).json({
-      status: "success",
-      message: "Update link success",
-      data: social,
-    });
-  } catch (err) {
-    next(err);
+
+    return res.status(200).json({ data: saved });
+  } catch (err: any) {
+    return res.status(400).json({ message: err?.message ?? "Bad Request" });
   }
 }
 
