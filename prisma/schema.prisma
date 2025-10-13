@@ -7,6 +7,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum SocialPlatform {
+  instagram
+  tiktok
+  x
+  linkedin
+  youtube
+  github
+}
+
 model User {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email       String   @unique
@@ -29,7 +38,7 @@ model SocialLink {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id     String   @db.Uuid
   platform    String   
-  handle      String
+  username    String
   url         String 
   order_index Int      @default(0)
   is_active   Boolean  @default(true) 
@@ -38,15 +47,15 @@ model SocialLink {
   
   user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade) 
 
-  @@unique([user_id, platform]) // Asumsi satu platform per user
+  @@unique([user_id, platform]) 
   @@map("social_links")
 }
 
 model Link {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id     String   @db.Uuid
-  title       String   // NOT NULL
-  url         String   // url text NOT NULL
+  title       String   
+  url         String   
   order_index Int      @default(0)
   created_at  DateTime @default(now()) @db.Timestamptz
   updated_at  DateTime @updatedAt @db.Timestamptz
