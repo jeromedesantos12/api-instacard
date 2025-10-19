@@ -17,12 +17,12 @@ router.put("/", auth, validate(socialSchema), putSocial);
 router.patch(
   "/:id/reorder",
   auth,
-  isExistSocial("social"),
+  isExistSocial("socialLink"),
   isSame,
   validate(orderSchema),
   updateSocialOrder
 );
-router.put("/:id", auth, isExistSocial("social"), isSame, restoreSocial);
-router.delete("/:id", auth, isExistSocial("social"), isSame, deleteSocial);
+router.put("/:id", auth, isExistSocial("socialLink"), isSame, restoreSocial);
+router.delete("/:id", auth, isExistSocial("socialLink"), isSame, deleteSocial);
 
 export default router;
