@@ -111,7 +111,7 @@
     summary: Get user by ID
     operationId: getUserById
     responses:
-      "200": { description: Success }
+      "200": { $ref: "#/components/schemas/User" }
       "404": { $ref: "#/components/responses/NotFound" }
   patch:
     tags: [User]
@@ -199,45 +199,60 @@
     responses:
       "200": { description: Success }
 
-# --- SOCIAL ROUTES (/social) ---
-/social:
+# --- SOCIAL ROUTES ---
+/social/active:
   get:
     tags: [Social]
-    summary: Get user social links
+    summary: Get active user social links
     operationId: getSocials
     parameters:
+      - name: sort
+        in: query
+        schema: { type: string, enum: [order, created_at] }
+        description: Field untuk pengurutan.
+      - name: order
+        in: query
+        schema: { type: string, enum: [asc, desc] }
+        description: Arah pengurutan.
       - $ref: "#/components/parameters/PaginationPage"
       - $ref: "#/components/parameters/PaginationLimit"
     responses:
-      "200": { description: Success }
-  post:
-    tags: [Social]
-    summary: Create new social link
-    operationId: postSocial # Asumsi postSocial adalah controller untuk router.post("/")
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SocialRequest"
-    responses:
-      "201": { description: Created }
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialsResponse"
 
-/social/{id}:
+/social/all:
   get:
     tags: [Social]
-    summary: Get social link by ID
-    operationId: getSocialById
+    summary: Get all user social links (active and inactive)
+    operationId: getSocialsAll
     parameters:
-      - $ref: "#/components/parameters/IdPath"
+      - name: sort
+        in: query
+        schema: { type: string, enum: [order, created_at] }
+        description: Field untuk pengurutan.
+      - name: order
+        in: query
+        schema: { type: string, enum: [asc, desc] }
+        description: Arah pengurutan.
+      - $ref: "#/components/parameters/PaginationPage"
+      - $ref: "#/components/parameters/PaginationLimit"
     responses:
-      "200": { description: Success }
-  patch:
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialsResponse"
+
+/social:
+  put:
     tags: [Social]
-    summary: Update social link details
-    operationId: updateSocial
-    parameters:
-      - $ref: "#/components/parameters/IdPath"
+    summary: Create or update a social link (Upsert)
+    operationId: putSocial
     requestBody:
       required: true
       content:
@@ -245,7 +260,15 @@
           schema:
             $ref: "#/components/schemas/SocialRequest"
     responses:
-      "200": { description: Success }
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Social"
+      "400": { description: Bad Request }
+
+/social/{id}:
   put:
     tags: [Social]
     summary: Restore a social link
@@ -253,15 +276,25 @@
     parameters:
       - $ref: "#/components/parameters/IdPath"
     responses:
-      "200": { description: Success }
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Social"
   delete:
     tags: [Social]
     summary: Soft-delete a social link
-    operationId: deleteSocial
+    operationId: deleteSocial # Ini melakukan soft-delete (is_active = false)
     parameters:
       - $ref: "#/components/parameters/IdPath"
     responses:
-      "200": { description: Success }
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Social"
 
 /social/{id}/reorder:
   patch:
@@ -277,4 +310,9 @@
           schema:
             $ref: "#/components/schemas/OrderRequest"
     responses:
-      "200": { description: Success }
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Social"

@@ -48,6 +48,50 @@ export async function getSocials(
   }
 }
 
+export async function getSocialsAll(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+    const sortField = req.query.sort === "order" ? "order_index" : "created_at";
+    const order =
+      (req.query.order as string)?.toLowerCase() === "desc" ? "desc" : "asc";
+    const userId = (req as any).user.id;
+    const socials = await prisma.socialLink.findMany({
+      where: {
+        user_id: userId,
+      },
+      take: limit,
+      skip: skip,
+      orderBy: {
+        [sortField]: order,
+      },
+    });
+    const total = await prisma.socialLink.count({
+      where: {
+        user_id: userId,
+        is_active: true,
+      },
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Fetch socials success!",
+      data: socials,
+      meta: {
+        total,
+        page,
+        limit,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function putSocial(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.id;

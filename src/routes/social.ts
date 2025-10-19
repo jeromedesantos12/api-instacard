@@ -2,6 +2,7 @@ import { Router } from "express";
 import { auth, isExistSocial, isSame } from "../middlewares/auth";
 import {
   getSocials,
+  getSocialsAll,
   putSocial,
   restoreSocial,
   deleteSocial,
@@ -12,7 +13,8 @@ import { orderSchema, socialSchema } from "../utils/joi";
 
 const router = Router();
 
-router.get("/", auth, getSocials);
+router.get("/active", auth, getSocials);
+router.get("/all", auth, getSocialsAll);
 router.put("/", auth, validate(socialSchema), putSocial);
 router.patch(
   "/:id/reorder",
