@@ -132,3 +132,23 @@ schemas:
     properties:
       order_index:
         { type: integer, description: New index position for reordering. }
+
+  Social:
+    type: object
+    properties:
+      id: { type: string, format: uuid }
+      platform: { type: string }
+      username: { type: string }
+      url: { type: string, format: url }
+      order_index: { type: integer }
+      is_active: { type: boolean }
+
+  SocialsResponse:
+    type: object
+    properties:
+      status: { type: string, example: Success }
+      message: { type: string, example: Social links retrieved successfully }
+      data:
+        type: array
+        items:
+          $ref: '#/components/schemas/Social'

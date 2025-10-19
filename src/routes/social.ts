@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { auth, isExistSocial, isSame } from "../middlewares/auth";
+import {
+  auth,
+  isExistSocial,
+  isExistSocialRestore,
+  isSame,
+} from "../middlewares/auth";
 import {
   getSocials,
   getSocialsAll,
@@ -24,7 +29,13 @@ router.patch(
   validate(orderSchema),
   updateSocialOrder
 );
-router.put("/:id", auth, isExistSocial("socialLink"), isSame, restoreSocial);
+router.put(
+  "/:id",
+  auth,
+  isExistSocialRestore("socialLink"),
+  isSame,
+  restoreSocial
+);
 router.delete("/:id", auth, isExistSocial("socialLink"), isSame, deleteSocial);
 
 export default router;

@@ -115,7 +115,7 @@
         description: Success
         content:
           application/json:
-            schema: { $ref: "#/schemas/User" }
+            schema: { $ref: "#/components/schemas/User" }
       "404": { $ref: "#/components/responses/NotFound" }
   patch:
     tags: [User]
@@ -125,7 +125,7 @@
       required: true
       content:
         multipart/form-data:
-          schema: { $ref: "#/schemas/UpdateUserRequest" }
+          schema: { $ref: "#/components/schemas/UpdateUserRequest" }
     responses:
       "200": { description: Success }
       "404": { $ref: "#/components/responses/NotFound" }
@@ -148,7 +148,7 @@
     requestBody:
       required: true
       content:
-        application/json: { schema: { $ref: "#/schemas/LinkRequest" } }
+        application/json: { schema: { $ref: "#/components/schemas/LinkRequest" } }
     responses:
       "201": { description: Created }
 
@@ -170,7 +170,7 @@
     requestBody:
       required: true
       content:
-        application/json: { schema: { $ref: "#/schemas/LinkRequest" } }
+        application/json: { schema: { $ref: "#/components/schemas/LinkRequest" } }
     responses:
       "200": { description: Success }
   delete:
@@ -192,7 +192,7 @@
     requestBody:
       required: true
       content:
-        application/json: { schema: { $ref: "#/schemas/OrderRequest" } }
+        application/json: { schema: { $ref: "#/components/schemas/OrderRequest" } }
     responses:
       "200": { description: Success }
 
@@ -217,7 +217,7 @@
       "200":
         description: Success
         content:
-          application/json: { schema: { $ref: "#/schemas/SocialsResponse" } }
+          application/json: { schema: { $ref: "#/components/schemas/SocialsResponse" } }
 
 /social/all:
   get:
@@ -239,7 +239,7 @@
       "200":
         description: Success
         content:
-          application/json: { schema: { $ref: "#/schemas/SocialsResponse" } }
+          application/json: { schema: { $ref: "#/components/schemas/SocialsResponse" } }
 
 /social:
   put:
@@ -249,12 +249,12 @@
     requestBody:
       required: true
       content:
-        application/json: { schema: { $ref: "#/schemas/SocialRequest" } }
+        application/json: { schema: { $ref: "#/components/schemas/SocialRequest" } }
     responses:
       "200":
         description: Success
         content:
-          application/json: { schema: { $ref: "#/schemas/Social" } }
+          application/json: { schema: { $ref: "#/components/schemas/Social" } }
       "400": { description: Bad Request }
 
 /social/{id}:
@@ -268,7 +268,7 @@
       "200":
         description: Success
         content:
-          application/json: { schema: { $ref: "#/schemas/Social" } }
+          application/json: { schema: { $ref: "#/components/schemas/Social" } }
   delete:
     tags: [Social]
     summary: Soft-delete a social link
@@ -279,7 +279,7 @@
       "200":
         description: Success
         content:
-          application/json: { schema: { $ref: "#/schemas/Social" } }
+          application/json: { schema: { $ref: "#/components/schemas/Social" } }
 
 /social/{id}/reorder:
   patch:
@@ -291,9 +291,9 @@
     requestBody:
       required: true
       content:
-        application/json: { schema: { $ref: "#/schemas/OrderRequest" } }
+        application/json: { schema: { $ref: "#/components/schemas/OrderRequest" } }
     responses:
       "200":
         description: Success
         content:
-          application/json: { schema: { $ref: "#/schemas/Social" } }
+          application/json: { schema: { $ref: "#/components/schemas/Social" } }
