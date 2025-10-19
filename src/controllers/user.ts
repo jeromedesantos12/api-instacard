@@ -81,6 +81,8 @@ export async function getUserByUsername(
         theme: true,
         created_at: true,
         updated_at: true,
+        links: true,
+        socialLinks: true,
       },
       where: { username },
     });
