@@ -8,6 +8,7 @@ import {
   getUser,
   updateUser,
   getUserByUsername,
+  deleteAvatar,
   generateBio,
 } from "../controllers/user";
 
@@ -25,5 +26,6 @@ router.patch(
   saveFiles,
   updateUser
 );
+router.delete("/avatar", auth, isExistUser("user"), deleteAvatar);
 
 export default router;

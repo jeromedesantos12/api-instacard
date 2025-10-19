@@ -177,7 +177,7 @@ export async function restoreSocial(
   }
 }
 
-export async function deleteSocial(
+export async function softDeleteSocial(
   req: Request,
   res: Response,
   next: NextFunction
@@ -197,7 +197,32 @@ export async function deleteSocial(
     });
     res.status(200).json({
       status: "success",
-      message: "Delete social success",
+      message: "Soft Delete social success",
+      data: social,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function hardDeleteSocial(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+    const social = await prisma.socialLink.delete({
+      where: {
+        id,
+        user_id: userId,
+        is_active: true,
+      },
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Hard delete social success",
       data: social,
     });
   } catch (err) {

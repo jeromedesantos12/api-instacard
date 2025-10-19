@@ -177,3 +177,42 @@ export async function updateUser(
     next(err);
   }
 }
+
+export async function deleteAvatar(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const model = (req as any).model;
+    const { id } = (req as any).user;
+    const oldAvatarName = model?.avatar_url;
+    const uploadsDir = resolve(process.cwd(), "uploads", "user");
+    const oldAvatarPath = oldAvatarName
+      ? resolve(uploadsDir, "avatar", oldAvatarName)
+      : null;
+    if (!oldAvatarName) {
+      throw appError("No avatar to delete", 404);
+    }
+    await prisma.user.update({
+      where: { id },
+      data: {
+        avatar_url: null,
+      },
+    });
+    if (oldAvatarPath) {
+      await unlink(oldAvatarPath).catch((err) => {
+        if (err.code !== "ENOENT") {
+          throw appError("Failed to delete old avatar file.", 500);
+        }
+      });
+    }
+    res.status(200).json({
+      status: "Success",
+      message: "Avatar deleted successfully!",
+      data: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+}

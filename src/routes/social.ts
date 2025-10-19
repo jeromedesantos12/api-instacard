@@ -10,7 +10,8 @@ import {
   getSocialsAll,
   putSocial,
   restoreSocial,
-  deleteSocial,
+  softDeleteSocial,
+  hardDeleteSocial,
   updateSocialOrder,
 } from "../controllers/social";
 import { validate } from "../middlewares/validate";
@@ -36,6 +37,19 @@ router.put(
   isSame,
   restoreSocial
 );
-router.delete("/:id", auth, isExistSocial("socialLink"), isSame, deleteSocial);
+router.delete(
+  "/soft/:id",
+  auth,
+  isExistSocial("socialLink"),
+  isSame,
+  softDeleteSocial
+);
+router.delete(
+  "/hard/:id",
+  auth,
+  isExistSocial("socialLink"),
+  isSame,
+  hardDeleteSocial
+);
 
 export default router;
