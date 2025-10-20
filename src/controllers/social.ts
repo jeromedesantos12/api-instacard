@@ -217,7 +217,6 @@ export async function hardDeleteSocial(
       where: {
         id,
         user_id: userId,
-        is_active: true,
       },
     });
     res.status(200).json({

@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   auth,
   isExistSocial,
+  isExistSocialHard,
   isExistSocialRestore,
   isSame,
 } from "../middlewares/auth";
@@ -47,7 +48,7 @@ router.delete(
 router.delete(
   "/hard/:id",
   auth,
-  isExistSocial("socialLink"),
+  isExistSocialHard("socialLink"),
   isSame,
   hardDeleteSocial
 );
