@@ -26,7 +26,6 @@ app.use("/uploads", express.static(resolve(process.cwd(), "uploads")));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(router);
-app.use("*catchall", notFound);
 app.use(errorHandler);
 
 server.listen(port, () =>
